@@ -26,7 +26,7 @@ class User(db.Model, UserMixin):
         self.username = username
         self.password_hash = generate_password_hash(password)
 
-    def check_password(self,password):
+    def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
@@ -38,10 +38,10 @@ class BlogPost(db.Model):
     users = db.relationship(User)
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeinKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     title = db.Column(db.String(140), nullable=False)
-    text = db.Column(db.Teext, nullable=False)
+    text = db.Column(db.Text, nullable=False)
 
     def __init__(self, title, text, user_id):
         self.title = title

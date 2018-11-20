@@ -15,7 +15,7 @@ def register():
 
     if form.validate_on_submit():
         # User Object
-        user = User(email=form, username=form.username.data, password=form.password.data)
+        user = User(email=form.email.data, username=form.username.data, password=form.password.data)
 
         db.session.add(user)
         db.session.commit()
@@ -29,7 +29,8 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data)
+
+        user = User.query.filter_by(email=form.email.data).first()
 
         if user.check_password(form.password.data) and user is not None:
 
@@ -44,7 +45,6 @@ def login():
 
             return redirect(next)
     return render_template('login.html', form=form)
-
 
 
 # Logout
@@ -62,9 +62,11 @@ def account():
     form = UpdateUserForm()
 
     if form.validate_on_submit():
+        print("validating!")
 
         # if picture is uploaded
         if form.picture.data:
+            print("uploading picture")
             username = current_user.username
             pic = add_profile_pic(form.picture.data, username)
 
@@ -87,9 +89,9 @@ def account():
 @users.route("/<username>")
 def user_posts(username):
     page = request.args.get('page', 1, type=int)
-    user = User.quer.filter_by(username=username).first_or_404()
+    user = User.query.filter_by(username=username).first_or_404()
 
-    blog_posts = BlogPost.query_filter_by(author=user).order_by(BlogPost.date.desc()).paginate(page=page, per_page=5)
+    blog_posts = BlogPost.query.filter_by(author=user).order_by(BlogPost.date.desc()).paginate(page=page, per_page=5)
 
     return render_template('user_blog_posts.html', blog_posts=blog_posts, user=user)
 
